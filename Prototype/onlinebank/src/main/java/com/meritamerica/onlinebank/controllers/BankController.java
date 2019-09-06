@@ -1,5 +1,8 @@
 package com.meritamerica.onlinebank.controllers;
 
+import java.util.List;
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -11,17 +14,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.meritamerica.onlinebank.models.Account;
+import com.meritamerica.onlinebank.models.DashModel;
+import com.meritamerica.onlinebank.models.LoginFormObject;
 import com.meritamerica.onlinebank.models.User;
+import com.meritamerica.onlinebank.models.UserFormObj;
 import com.meritamerica.onlinebank.services.BankService;
 
 @Controller
 public class BankController {
 	private final BankService service;
 	
-	
 	public BankController(BankService b) { service = b; }
+	
 	@GetMapping("/")
 	public String index(Model model) {
+		model.addAttribute("lfo", new LoginFormObject());
 		return "index.jsp";
 	}
 	
@@ -37,83 +45,55 @@ public class BankController {
 	
 	@PostMapping("/signup")
 	public String signup(Model model) {
-		model.addAttribute("user", new User());
+		model.addAttribute("ufo", new UserFormObj());
 		return "signup.jsp";
 	}
 	
 	
-	@PutMapping("/create")
-	public String create(Model model, @Valid @ModelAttribute("user") User user, BindingResult result) {
+	@PutMapping("/createUser")
+	public String create(Model model, @Valid @ModelAttribute("ufo") UserFormObj user, BindingResult result) {
         if (result.hasErrors()) {
-        	model.addAttribute("action", "New");
             return "signup.jsp";
-        } else {
-        	service.createUser(user);
-            return "redirect:/";
-        }
+        } 
+    	User u = user.getUser();
+    	service.createUser(u);
+        return "redirect:/";
 	}
-//	public String create(Model model, @RequestParam("first") String first,
-//			@RequestParam("last") String last, @RequestParam("email") String email,
-//			 @RequestParam("pw") String pw,  @RequestParam("addr1") String addr1,
-//			 @RequestParam("addr2") String addr2,  @RequestParam("city") String city,
-//			 @RequestParam("state") String state,  @RequestParam("zip") String zip) {
-//		User u = new User(first, last, email, pw, new Address(addr1, addr2, city, state, zip));
-//		service.createUser(u);
-//		model.addAttribute("user", u);
-//		return "index.jsp";
-//	}
 	
 	@PostMapping("/signin")
-	public String signin(Model model, @RequestParam("email") String email, @RequestParam("pass") String pass) {
-		User u = service.findUserByEmail(email);
-		if (u.auth(pass)) {
-			model.addAttribute("user", u);
-			return "dashboard";
+	public String signin(Model model, @Valid @ModelAttribute("lfo") LoginFormObject lfo,  BindingResult result) {
+        if (result.hasErrors()) {
+        	lfo.setFailed(true);
+        	model.addAttribute("lfo", lfo);
+            return "index.jsp";
+        } 
+		Optional<User> oU = service.findUserByEmail(lfo.getEmail());
+		if (oU.isPresent()) {
+			DashModel dm = new DashModel();
+			User u = (User) oU.get();
+			if (u.auth(lfo.getPassword())) {
+				dm.setUser(u);
+				if (u.hasAccounts()) {
+					dm.setAccount(u.getAccounts().toArray(new Account[0])[0]);
+				}
+				model.addAttribute("dm", dm);
+				return "/dashboard/dashboard.jsp";
+			}			
 		}
-		model.addAttribute("failed", true);
-		return "login";
+    	lfo.setFailed(true);
+    	model.addAttribute("lfo", lfo);
+		return "index.jsp";
 	}
-	
-	@GetMapping("/dashboard")
-	public String dashboard(Model model) {
-		
-		return "dashboard.jsp";
-	}
-	
-	
-	
-	
 	
 	/////////////////////////////////////////////
 	
-	
-	
-	
-	
 	@GetMapping("/user-test")
 	public String user_test(Model model) {
-		model.addAttribute("users", service.allUsers());
+		List<User> uList = service.allUsers();
+		model.addAttribute("users", uList);
 		return "user-test.jsp";
 	}
 	
-	
-	
-	
-	
-	
 	//////////////////////////////////////////////
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

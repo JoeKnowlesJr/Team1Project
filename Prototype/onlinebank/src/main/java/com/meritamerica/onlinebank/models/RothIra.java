@@ -1,5 +1,8 @@
 package com.meritamerica.onlinebank.models;
 
+import javax.persistence.Entity;
+
+@Entity
 public class RothIra extends IraAccount {
 
 	/**

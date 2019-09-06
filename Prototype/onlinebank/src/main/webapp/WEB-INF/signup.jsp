@@ -13,7 +13,7 @@
 		<div class='container'>
 			<div><h1>Merit Banking Services</h1></div>
 			<div>
-				<form:form id='signup' method='post' onsubmit="return validateSignup();" modelAttribute="user">
+				<form:form id='signup' method='post' onsubmit="return validateSignup();" modelAttribute="ufo">
 		    		<input type="hidden" name="_method" value="put">
 					<fieldset class='fieldset-auto-width'>
 						<legend>New Account</legend>
@@ -50,7 +50,7 @@
 							</tr>
 						</tbody></table>
 	
-						<input formaction='/create' id='btn_create' type='submit' value='Create Account' disabled />
+						<input formaction='/createUser' id='btn_create' type='submit' value='Create Account' disabled />
 						<input type='reset' value='Clear' />
 					</fieldset>	
 				</form:form>

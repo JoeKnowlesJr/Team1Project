@@ -1,3 +1,11 @@
 .inline {
 	display: inline;
 }
+
+.alert {
+	color: red;
+}
+
+#logo {
+	width: 400px;
+}
