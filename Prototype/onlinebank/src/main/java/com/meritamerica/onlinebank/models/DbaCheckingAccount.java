@@ -14,17 +14,10 @@ public class DbaCheckingAccount extends Account {
 	public DbaCheckingAccount(Long num, double bal, double rate, User u) {
 		super(num, AccountType.DBACHECK, bal, rate, u);
 	}
-
+	
 	@Override
-	public double deposit(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
+	public String toString() {
+		String s = String.format("%s (%04d)", "DbaChk", acctNumber % 10000); 
+		return s;
 	}
-
-	@Override
-	public double withdraw(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

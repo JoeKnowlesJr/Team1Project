@@ -14,17 +14,4 @@ public class CdAccount extends Account {
 	public CdAccount(Long num, double bal, double rate, User u) {
 		super(num, AccountType.CD, bal, rate, u);
 	}
-
-	@Override
-	public double deposit(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double withdraw(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

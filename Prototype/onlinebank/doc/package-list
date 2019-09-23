@@ -1,0 +1,5 @@
+com.meritamerica.onlinebank
+com.meritamerica.onlinebank.controllers
+com.meritamerica.onlinebank.models
+com.meritamerica.onlinebank.repository
+com.meritamerica.onlinebank.services

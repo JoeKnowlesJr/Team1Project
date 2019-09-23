@@ -1,9 +1,10 @@
 package com.meritamerica.onlinebank.models;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
-
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,12 +36,13 @@ public class User implements Serializable {
 	private Date userCreated;
 	private Date userUpdated;
     private Address address;
-    private Set<Account> accounts;
-    
+    private List<Account> accounts;
     
 //    private Set<Account> userAccounts;
+    public User() {
+		accounts = new ArrayList<>(); 
+	}
 	
-	public User() {}
 	public User(String f, String l, String e, String p, Address a) {
 		firstName = f;
 		lastName = l;
@@ -48,14 +50,15 @@ public class User implements Serializable {
 		password = p;
 		address = a;
 		address.setUser(this);
+		accounts = new ArrayList<>(); 
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="id", unique=true, nullable=false, updatable=false)
+	@Column(name="user_id", unique=true, nullable=false, updatable=false)
     public Long getId() { return userId; }
     public void setId(Long id) { this.userId = id; }
-    
+    	
 	@Size(min=2, max=80)
     @Column(name="first_name")
 	public String getFirstName() { return firstName; }
@@ -88,12 +91,10 @@ public class User implements Serializable {
 	}
 	
     @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    public Set<Account> getAccounts() { return accounts; }
-	public void setAccounts(Set<Account> accounts) {
-		this.accounts = accounts; 
-	}	
-
-    @Temporal(TemporalType.DATE)
+    public List<Account> getAccounts() { return accounts; }
+	public void setAccounts(List<Account> accounts) { this.accounts = accounts; }	
+	
+	@Temporal(TemporalType.DATE)
     @Column(name = "created")
     public Date getCreated() { return userCreated; }
     public void setCreated(Date created) {this.userCreated = created; }
@@ -109,27 +110,19 @@ public class User implements Serializable {
 	@PreUpdate
 	protected void onUpdate() { this.userUpdated = new Date(); }
 
-	
 	public boolean auth(String p) { return password.contentEquals(p); }
 	
-	@Transient
-	public boolean isValid() {
-		boolean retVal = true;
-		if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty())
-			retVal = false;
-		return retVal;
-	}
-	
 	public void addAccount(Account account) {
+		if (accounts == null) accounts = new ArrayList<>();
 		account.setUser(this);
 		this.accounts.add(account);
 	}
 	
 	@Transient
-	public boolean hasAccounts() { return accounts.size() > 0; }
-	
-	@Transient
 	public String getName() { return String.format("%s %s", firstName, lastName); }
 	
-	
+	@Transient
+	public String getCreatedDate() {
+        return new SimpleDateFormat("ddMMMyyyy").format(userCreated);
+	}
 }

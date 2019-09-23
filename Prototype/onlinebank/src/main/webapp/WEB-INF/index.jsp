@@ -1,27 +1,41 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ page isErrorPage="true" %>
 <!DOCTYPE html>
 <html lang="en">
    <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Merit Banking</title>
-      <link href="css/style.css" rel="stylesheet" type="text/css">
+      <link href="style.css" rel="stylesheet" type="text/css">
       <link href="css/bank.css" rel="stylesheet" type="text/css">
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-      <script type="text/javascript">
-      </script>
+      <!-- <script type="text/javascript" src="JavaScript.js"></script> -->
+      <script></script>
    </head>
    <body>
-      <img id="logo" src="MeritBankLogo.gif" alt="MeritBankOfAmericaLogo"/>
+      <img src="img/MeritBankLogo.gif" alt="MeritBankOfAmericaLogo" width="600"/>
       <div id="top_links">
          <div id="header">
-            <h3>Your Number One Bank</h3>
+            <h2>Your Number One Bank</h2>
          </div>
          <div id="navigation">
+               <div class="container">
+                  <button id="login-button">log in</button>
+                  <div id="login-container" class="hidden-login">
+                  	<form:form action="/signin" method="post" modelAttribute="lfo">
+                        <c:if test="${lfo.isFailed()} == true">
+                           <p class='alert'>Invalid credentials!</p>
+                        </c:if>
+                        <form:input type="text" placeholder="Username" path="email" required="required"></form:input>
+                        <form:input type="password" placeholder="Password" path="password" required="required"></form:input>
+                        <input type="submit" value="Sign In"/>
+                     </form:form>
+                     <form><button formaction="/signup" formmethod="post">Sign Up</button></form>
+                  </div>
+               </div>
                <ul>
-                  <li><a href="login.jsp">LOGIN</a></li>
                   <li><a href="locations.jsp">LOCATIONS</a></li>
                   <li><a href="about.jsp">ABOUT US</a></li>
                   <li><a href="contact.jsp">CONTACT US </a></li>
@@ -50,72 +64,78 @@
          
          <div id="wrapper">
             <div id="main_content">
-               <div class="subcontents lg md sm">
-                  <h1 class="content_header">Random Latin</h1>
-                  <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+               <div class="row1">
+                  <div class="subcontents lg md sm">
+                     <h1 class="content_header">Welcome</h1>
+                     <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                  </div>
+                  <div class="image">
+                     <div class="opacity">
+                        <img class="contentImage" src="img/guyinsuit.jpg" alt="GuyInSuit" width="600"/>
+                     </div>
+                  </div>
                </div>
-
-               <div class="logincontents lg md sm">
-                  	<h1 class="content_header">Welcome!</h1>
-					<div class="inputs">
-						<form:form method='post' modelAttribute="lfo">
-							<fieldset class='fieldset-auto-width'>
-								<legend>Login</legend>
-								<table><tbody>
-								<c:if test="${lfo.isFailed()} == true">
-									<tr><td class='alert'>Invalid credentials!</td></tr>
-								</c:if>
-									<tr>
-										<td>Email:</td><td><input type='email' name='email' required/></td>
-									</tr>
-									<tr>
-										<td>Password:</td><td><input type='password' name='password' required/></td>
-									</tr>
-								</tbody></table>
-			
-								<input formaction='/signup' type='submit' value='Sign Up' />
-								<input formaction='/signin' type='submit' value='Sign In' />
-							</fieldset>				
-						</form:form>
-					</div>                  
+               <div class="row2">
+                  <div class="image">
+                     <div class="opacity">
+                        <img class="contentImage" src="img/newspaper.jpg" alt="Newspaper" width="600"/>
+                     </div>
+                  </div>
+                  <div class="subcontents lg md sm">
+                     <h1 class="content_header">Mission</span>Statement</h1>
+                     <p> "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                  </div>
                </div>
-               <div class="subcontents lg md sm">
-                  <h1 class="content_header">Mission Statement</h1>
-                  <p> "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
-               </div>               
-               <div id="advertisement"></div>
+               <div class="row3">
+                  <div class="subcontents lg md sm">
+                     <h1 class="content_header">What to add here?</h1>
+                     <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                  </div>
+                  <div class="image">
+                     <div class="opacity">
+                        <img class="contentImage" src="img/people.jpg" alt="PeopleWalking" width="600"/>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="footer">
+               <h1 class="copyright">Copyright&#169; Team Sparks </h1>
             </div>
          </div>
    <!--end of footer-->
-
-      </div>
-         <!-- Bootstrap core JavaScript
+   <!-- Bootstrap core JavaScript
            ================================================== -->
            <!-- Placed at the end of the document so the pages load faster -->
-           <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+           <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
            <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
            <script src="../../assets/js/vendor/popper.min.js"></script>
            <script src="../../dist/js/bootstrap.min.js"></script>
+      </div>
+      <script type="text/javascript" src="JavaScript.js"></script>
       <script>
-         // When the user scrolls the page, execute myFunction 
-         window.onscroll = function() {myFunction()};
-         // Get the navbar
-         var navbar = document.getElementById("navigation");
-         // Get the offset position of the navbar
-         var sticky = navbar.offsetTop;
-         // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
-         function myFunction() {
-         if (window.pageYOffset >= sticky) {
-            navbar.classList.add("sticky")
-         } else {
-            navbar.classList.remove("sticky");
-         }
-         }
+      window.onscroll = function() {
+    		myFunction()
+    	};
+
+    	// Get the navbar
+    	var navbar = document.getElementById("navigation");
+
+    	// Get the offset position of the navbar
+    	var sticky = navbar.offsetTop;
+
+    	// Add the sticky class to the navbar when you reach its scroll position. Remove
+    	// "sticky" when you leave the scroll position
+    	function myFunction() {
+    		if (window.pageYOffset >= sticky) {
+    			navbar.classList.add("sticky")
+    		} else {
+    			navbar.classList.remove("sticky");
+    		}
+    	}
+        
+    	$('#login-button').click(function() {
+    		$('#login-container').toggleClass('hidden-login show-login');
+    	});
       </script>
    </body>
 </html>
-
-
-
-
-

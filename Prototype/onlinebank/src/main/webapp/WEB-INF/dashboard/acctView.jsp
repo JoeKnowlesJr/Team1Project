@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,9 +7,9 @@
 		<link rel="stylesheet" type="text/css" href="css/dashboard.css">
 	</head>
 	<body>
-		<table>
+		<table class="w3-table-all w3-hoverable">
 			<thead>
-				<tr>
+				<tr class="w3-light-grey">
 					<th>Account #</th>
 					<th>Acct Type</th>
 					<th>Balance</th>

@@ -8,27 +8,23 @@
 		<meta charset="ISO-8859-1">
 	</head>
 	<body>
-		<form:form id='transaction' method='post' modelAttribute="tfo">
+		<form:form id='transaction' method='post' modelAttribute="dm.tfo">
 			<fieldset class='fieldset-auto-width'>
-				<legend>Transaction</legend>
+				<legend align="left">Withdrawl</legend>
 				<table><tbody>
-					<c:if test="${failed==true}">
-						<tr><td>${error}</td></tr>
+					<c:if test="${dm.isTfoError() == true}">
+						<tr><td>${dm.getError()}</td></tr>
 					</c:if>
 					<tr>
-						<td>${account}</td>
+						<td>${account.toString()}</td>
 						<td>									
-						    <form:select  path="target" required="true">
-							    <form:option value="">Select Target</form:option>
-							    <c:forEach items="${accounts}" var="a">
-							    	<form:option value="${a.getId()}">${a.toString()}</form:option>
-							    </c:forEach>
+						    <form:select  path="tAcct" required="true">
+						    	<form:option selected="selected" value="-" label="Options"></form:option>
+						    	<form:options items="${dm.getNonAccountTypes()}"></form:options>
 						    </form:select>								
 						</td>
 						<td><span class="dollar-sign">$</span><form:input id="amount-input" type="number" step="0.01" path="amount"></form:input></td>	
-					</tr>
-					<tr>
-						<td colspan="2"><input formaction='/createAccount' type='submit' value='Open Account'/></td>
+						<td colspan="2"><input formaction='/transaction' type='submit' value='Withdraw'/></td>
 					</tr>
 				</tbody></table>						
 			</fieldset>	

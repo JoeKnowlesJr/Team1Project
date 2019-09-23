@@ -14,17 +14,4 @@ public class RegularIra extends IraAccount {
 	public RegularIra(Long num, double bal, double rate, User u) {
 		super(num, AccountType.REGIRA, bal, rate, u);
 	}
-
-	@Override
-	public double deposit(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double withdraw(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

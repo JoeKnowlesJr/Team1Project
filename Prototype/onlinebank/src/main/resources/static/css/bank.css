@@ -9,3 +9,9 @@
 #logo {
 	width: 400px;
 }
+
+.fieldset-auto-width {
+	margin-top: 30px;
+     display: inline-block;
+     border: 2px solid #143244;
+}

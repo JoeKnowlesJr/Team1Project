@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +26,7 @@ public abstract class Account implements Serializable {
 	private static final long serialVersionUID = -6931308272159535229L;
 	public static final Long CASH = -1111111L;
 	public static final Long CHECK = -2222222L;
+	public static final Long ATM = -3333333L;
 
 	/**
 	 * Base class for all account types
@@ -42,13 +42,14 @@ public abstract class Account implements Serializable {
 	protected Date acctCreated;
 	protected Date acctUpdated;
 	
-	protected Account() {}
+	protected Account() { transactions = new ArrayList<>(); }
 	protected Account(Long num, AccountType type, double bal, double rate, User u) {
 		acctNumber = num;
 		acctType = type;
 		acctBalance = bal;
 		acctRate = rate;
 		user = u;
+		transactions = new ArrayList<>();
 	}
 	
 	@Id
@@ -86,11 +87,9 @@ public abstract class Account implements Serializable {
 	
     @OneToMany(mappedBy="account", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     public List<Transaction> getTransactions() {
-    	if (transactions == null) transactions = new ArrayList<>(); 
     	return transactions;
     }
 	public void setTransactions(List<Transaction> transactions) {
-		if (transactions == null) transactions = new ArrayList<>();
 		this.transactions = transactions;
 	}
 	
@@ -104,17 +103,21 @@ public abstract class Account implements Serializable {
     public Date getUpdated() { return acctUpdated; }
     public void setUpdated(Date updated) {this.acctUpdated = updated; }
     
-	public double deposit(Transaction t) {		// Returns new balance
-		if (t.getType() != TransactionType.DEPOSIT) return acctBalance;
-		
-		acctBalance += t.getAmount();
-		return acctBalance;
-	}
-	public double withdraw(Transaction t) {		// "	"	"	"	"
-		if (t.getType() != TransactionType.WITHDRAWL) return acctBalance;
-		acctBalance -= t.getAmount();
-		return acctBalance;		
-	}
+    public double transact(Transaction t) {
+		t.setAccount(this);
+		transactions.add(t);
+    	switch (t.getType()) {
+			case DEPOSIT:
+				acctBalance += t.getAmount();
+				break;
+    		case WITHDRAWL:
+    		case TRANSFER:
+    			acctBalance -= t.getAmount();
+    			break;
+    		default: break;
+    	}
+    	return acctBalance;
+    }
 	
 	@PrePersist
 	protected void onCreate() { this.acctCreated = new Date(); }
@@ -129,21 +132,8 @@ public abstract class Account implements Serializable {
 		return s;
 	}
 	
-	public static boolean isValid(Account a) {
-		boolean retVal = true;
-		if (a == null) return false;
-		return retVal;
-	}
-	
 	public boolean compareTo(Account a) {
 		if (a == null) return false;
-		Long a1 = a.getAccountNumber();
-		Long a2 = this.acctNumber;
-		return a1 == a2;
+		return a.getAccountNumber() == this.acctNumber;
 	}
-	
-	protected void saveTransaction(Transaction t) {
-		getTransactions().add(t);
-	}
-	
 }

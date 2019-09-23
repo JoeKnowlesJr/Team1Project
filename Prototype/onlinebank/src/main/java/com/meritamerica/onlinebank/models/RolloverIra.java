@@ -9,17 +9,8 @@ public class RolloverIra extends IraAccount {
 	 * 
 	 */
 	private static final long serialVersionUID = 8395839170601401733L;
-
-	@Override
-	public double deposit(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
+	
+	public RolloverIra(Long num, double bal, double rate, User u) {
+		super(num, AccountType.ROLLIRA, bal, rate, u);
 	}
-
-	@Override
-	public double withdraw(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

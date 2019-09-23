@@ -9,5 +9,4 @@ public class OnlinebankApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OnlinebankApplication.class, args);
 	}
-
 }

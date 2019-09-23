@@ -14,17 +14,4 @@ public class PersonalCheckingAccount extends Account {
 	public PersonalCheckingAccount(Long num, double bal, double rate, User u) {
 		super(num, AccountType.CHECKING, bal, rate, u);
 	}
-
-	@Override
-	public double deposit(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double withdraw(Transaction t) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

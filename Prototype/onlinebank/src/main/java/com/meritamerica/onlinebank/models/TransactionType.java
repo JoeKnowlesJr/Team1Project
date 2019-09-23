@@ -16,4 +16,8 @@ public enum TransactionType {
     public String getTypeName() {
         return typeName;
     }
+    
+    public String[] getUserTypes() {
+    	return new String[]{"Withdrawl", "Deposit", "Transfer"};
+    }
 }		      

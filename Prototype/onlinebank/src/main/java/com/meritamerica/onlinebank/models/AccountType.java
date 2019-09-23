@@ -9,7 +9,8 @@ public enum AccountType {
 	CD("CD"),
 	REGIRA("RegIra"),
 	ROTHIRA("RothIra"),
-	ROLLIRA("RollIra");
+	ROLLIRA("RollIra"),
+	NONACCT("NonAcct");
 	
     private final String typeName;
 
@@ -21,7 +22,7 @@ public enum AccountType {
         return typeName;
     }
 	
-	String[] getTypes() {
+	public static String[] getTypes() {
 		return new String[] {
 			"Savings",
 			"Per Chk",
