@@ -8,18 +8,30 @@ import java.util.Map;
 
 import com.meritamerica.onlinebank.models.Account;
 import com.meritamerica.onlinebank.models.AccountType;
-import com.meritamerica.onlinebank.models.SavingsAccount;
 import com.meritamerica.onlinebank.models.User;
 
 public class DashModel {
+
+
+	public NewAccountFormObject nafo;
+	public CloseAccountFormObject cafo;
+	public TransactionFormObject tfo;
+	public User user;
+	public Account account;
+	public boolean tfoError;
+	public boolean nafoError;
+	public boolean cafoError;
+	public String error;
+	private boolean showClose;
 	
 	public DashModel() {
 		nafo = new NewAccountFormObject();
 		tfo = new TransactionFormObject();
-		account = new SavingsAccount();
+		account = new Account();
 		tfoError = false;
 		nafoError = false;
 		error = "";
+		setShowClose(false);
 	}	
 	
 	public void setDefaults(User user) {
@@ -32,6 +44,22 @@ public class DashModel {
 		this.cafoError = false;
 		this.tfoError = false;
 		this.error = "";
+		setShowClose(false);
+	}
+	
+	public static DashModel getDefault(User user) {
+		DashModel ret = new DashModel();
+		ret.user = user;
+		ret.account = user.getAccounts().get(0);
+		ret.nafo = new NewAccountFormObject();
+		ret.setCafo(new CloseAccountFormObject());
+		ret.tfo = new TransactionFormObject();
+		ret.nafoError = false;
+		ret.cafoError = false;
+		ret.tfoError = false;
+		ret.error = "";
+		ret.setShowClose(false);
+		return ret;
 	}
 	
 	public List<String> getTransactionTypes() {
@@ -71,15 +99,11 @@ public class DashModel {
 	public boolean isTfoError() { return tfoError; }
 	public void setTfoError(boolean tfoError) { this.tfoError = tfoError; }
 
-	public NewAccountFormObject nafo;
-	public CloseAccountFormObject cafo;
-	public TransactionFormObject tfo;
-	public User user;
-	public Account account;
-	public boolean tfoError;
-	public boolean nafoError;
-	public boolean cafoError;
-	public String error;
-	
+	public boolean isShowClose() {
+		return showClose;
+	}
 
+	public void setShowClose(boolean showClose) {
+		this.showClose = showClose;
+	}
 }

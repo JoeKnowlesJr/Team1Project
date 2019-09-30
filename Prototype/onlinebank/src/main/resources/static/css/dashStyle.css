@@ -6,6 +6,11 @@
 #newacct {
 	margin-top: 25px;
 }
+.scroll-table {
+	height: 200px;
+	overflow-y: auto;
+	color: red;
+}
    #header
     {
     margin:0 auto;

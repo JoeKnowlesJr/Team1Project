@@ -22,16 +22,12 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="accounts")
-public abstract class Account implements Serializable {
+public class Account implements Serializable {
 	private static final long serialVersionUID = -6931308272159535229L;
 	public static final Long CASH = -1111111L;
 	public static final Long CHECK = -2222222L;
 	public static final Long ATM = -3333333L;
 
-	/**
-	 * Base class for all account types
-	 */
-	
 	protected Long acctId;
 	protected Long acctNumber;
 	protected AccountType acctType;
@@ -42,8 +38,8 @@ public abstract class Account implements Serializable {
 	protected Date acctCreated;
 	protected Date acctUpdated;
 	
-	protected Account() { transactions = new ArrayList<>(); }
-	protected Account(Long num, AccountType type, double bal, double rate, User u) {
+	public Account() { transactions = new ArrayList<>(); }
+	public Account(Long num, AccountType type, double bal, double rate, User u) {
 		acctNumber = num;
 		acctType = type;
 		acctBalance = bal;
@@ -107,11 +103,11 @@ public abstract class Account implements Serializable {
 		t.setAccount(this);
 		transactions.add(t);
     	switch (t.getType()) {
-			case DEPOSIT:
+			case Deposit:
 				acctBalance += t.getAmount();
 				break;
-    		case WITHDRAWL:
-    		case TRANSFER:
+    		case Withdrawl:
+    		case Transfer:
     			acctBalance -= t.getAmount();
     			break;
     		default: break;
@@ -120,17 +116,19 @@ public abstract class Account implements Serializable {
     }
 	
 	@PrePersist
-	protected void onCreate() { this.acctCreated = new Date(); }
+	private void onCreate() { this.acctCreated = new Date(); }
 	
 	@PreUpdate
-	protected void onUpdate() { this.acctUpdated = new Date(); }
+	private void onUpdate() { this.acctUpdated = new Date(); }
 
 	@Override
 	public String toString() {
-		String tName = acctType.getTypeName();
+		String tName = acctType.name();
 		String s = String.format("%s (%04d)", tName, acctNumber % 10000); 
 		return s;
 	}
+	
+	public String acctType() { return acctType.name(); }
 	
 	public boolean compareTo(Account a) {
 		if (a == null) return false;

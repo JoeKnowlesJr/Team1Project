@@ -1,8 +1,7 @@
 package com.meritamerica.onlinebank.controllers;
 
 import com.meritamerica.onlinebank.services.TransactionService;
-
-import javax.servlet.http.HttpServletRequest;
+import com.meritamerica.onlinebank.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.models.Transaction;
-import com.meritamerica.onlinebank.models.UserSession;
-import com.meritamerica.onlinebank.services.UserService;
 
 @Controller
 public class TransactionController {
@@ -41,7 +38,7 @@ public class TransactionController {
 	}
 	
 	@PostMapping("/transaction/{tType}")
-	public String transactionSelect(HttpServletRequest request, Model model, @ModelAttribute("dm") DashModel dm, @PathVariable("tType") String tType) {
+	public String transactionSelect(Model model, @ModelAttribute("dm") DashModel dm, @PathVariable("tType") String tType) {
 		String view = "";
 		switch(tType) {
 		case "Transfer":
@@ -54,7 +51,6 @@ public class TransactionController {
 			view = "/dashboard/twView.jsp";
 			break;
 		}
-		model.addAttribute("accounts", ((UserSession)request.getSession().getAttribute("user-session")).getUser().getAccounts());
 		model.addAttribute("dm", dm);
 		return view;
 	}

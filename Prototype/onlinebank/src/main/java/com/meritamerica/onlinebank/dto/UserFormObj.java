@@ -1,5 +1,8 @@
 package com.meritamerica.onlinebank.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.meritamerica.onlinebank.models.Address;
@@ -9,38 +12,49 @@ import com.meritamerica.onlinebank.validation.PasswordMatches;
 @PasswordMatches
 public class UserFormObj {
 	
+	@NotEmpty
+	@NotNull
 	private String firstName;
-	
+
+	@NotEmpty
+	@NotNull
 	private String lastName;
 	
+	@NotEmpty
+	@NotNull
 	private String email;
 
+	@NotEmpty
+	@NotNull
 	private String password1;
 	
+	@NotEmpty
+	@NotNull
 	private String password2;
 
+	@NotEmpty
+	@NotNull
 	private String line1;
 
 	private String line2;
+	
+	@NotEmpty
+	@NotNull
 	private String city;
 	
+	@NotEmpty
+	@NotNull
 	private String state;
 	
+	@NotEmpty
+	@NotNull
 	@Pattern(regexp="^[0-9]{5}(?:-[0-9]{4})?$")
 	private String zip;
 	
+	@Min(value=100)
+	private double initalDeposit;
+	
 	public UserFormObj() {}
-//	public UserFormObj(String firstName, String lastName, String email, String password, String line1, String line2, String city, String state, String zip) {
-//		this.firstName = firstName;
-//		this.lastName = lastName;
-//		this.email = email;
-//		this.password1 = password;
-//		this.line1 = line1;
-//		this.line2 = line2;
-//		this.city = city;
-//		this.state = state;
-//		this.zip = zip;
-//	}
 	
 	public String getFirstName() { return firstName; }
 	public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -62,5 +76,8 @@ public class UserFormObj {
 	public void setState(String state) { this.state = state; }
 	public String getZip() { return zip; }
 	public void setZip(String zip) { this.zip = zip; }
+	public double getInitalDeposit() { return initalDeposit; }
+	public void setInitalDeposit(double initalDeposit) { this.initalDeposit = initalDeposit; }
 	public User getUser() { return new User(firstName, lastName, email, password1, new Address(line1, line2, city, state, zip)); }
+
 }

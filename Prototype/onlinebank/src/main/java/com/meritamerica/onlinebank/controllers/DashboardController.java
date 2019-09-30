@@ -1,5 +1,7 @@
 package com.meritamerica.onlinebank.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,36 +12,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.models.Account;
 import com.meritamerica.onlinebank.models.User;
-import com.meritamerica.onlinebank.models.UserSession;
 import com.meritamerica.onlinebank.services.AccountService;
 
 @Controller
 public class DashboardController {
 	private final AccountService service;
-	private UserSession uSession;
+	private DashModel mdm;
 	
 	public DashboardController(AccountService b) { service = b; }
 	
 	@PostMapping("/dashboard")
-	public String dash(Model model, @ModelAttribute("dm") DashModel dm) {
+	public String dash(HttpServletRequest request, Model model) {
+		User user = (User) request.getSession().getAttribute("user");
+		DashModel dm = DashModel.getDefault(user);
 		model.addAttribute("dm", dm);
 		return "/dashboard/dashboard.jsp";
 	}
 	
 	@GetMapping("/dashboard")
-	public String dashGet(HttpServletRequest request, Model model, @ModelAttribute("dm") DashModel dm) {
-		uSession = (UserSession) request.getSession().getAttribute("user-session");
-		if (uSession != null) dm.setDefaults((User)uSession.getUser());
+	public String dashGet(HttpServletRequest request, Model model) {
+		User user = (User) request.getSession().getAttribute("user");
+		DashModel dm = DashModel.getDefault(user);
 		model.addAttribute("dm", dm);
 		return "/dashboard/dashboard.jsp";
 	}
 	
 	@GetMapping("/dashboard/acctView/{id}")
-	public String acctView(Model model, @PathVariable("id") Long id, @ModelAttribute("dm") DashModel dm) {
+	public String acctView(HttpServletRequest request, Model model, @PathVariable("id") Long id) {
+		User u = (User)request.getSession().getAttribute("user");
+		DashModel dm = DashModel.getDefault(u);
 		Optional<Account> oA = service.findAccountById(id);
 		if (oA.isPresent()) {
 			dm.account = (Account)oA.get();
@@ -49,16 +53,21 @@ public class DashboardController {
 	}
 	
 	@GetMapping("/dashboard/open")
-	public String dOpen(Model model, @ModelAttribute("dm") DashModel dm) {
-		model.addAttribute("dm", dm);
+	public String dOpen(HttpServletRequest request, Model model) {
+		User u = (User)request.getSession().getAttribute("user");
+		DashModel dm = DashModel.getDefault(u);
 		return "/dashboard/open.jsp";
 	}
 	
 	@GetMapping("/dashboard/close")
-	public String dClose(HttpServletRequest request, Model model, @ModelAttribute("dm") DashModel dm) {
-		uSession = (UserSession) request.getSession().getAttribute("user-session");
-		model.addAttribute("dm", dm);
-		model.addAttribute("accts", uSession.getUser().getAccounts());
+	public String dClose(HttpServletRequest request, Model model) {
+		User u = (User) request.getSession().getAttribute("user");
+		model.addAttribute("user", u);
+		List<Account> acctList = new ArrayList<>();
+		for (Account a : mdm.getUser().getAccounts()) 
+			if (a.acctType() != "Closed") 
+				acctList.add(a);
+		model.addAttribute("accts", acctList);
 		return "/dashboard/close.jsp";
 	}
 	

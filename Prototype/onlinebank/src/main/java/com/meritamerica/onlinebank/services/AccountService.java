@@ -2,6 +2,7 @@ package com.meritamerica.onlinebank.services;
 
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import com.meritamerica.onlinebank.models.Account;
@@ -24,6 +25,22 @@ public class AccountService {
     public Account createAccount(Account a) { return acctRepo.save(a); }
     public Account updateAccount(Account a) { return acctRepo.save(a); }
     
-    public Optional<Account> findAccountById(Long id) { return acctRepo.Id(id); }
-    public Optional<Account> findByAccountNumber(Long num) { return acctRepo.findByAccountNumber(num); }
+    public Optional<Account> findAccountById(Long id) { 
+    	Optional<Account> oA = acctRepo.Id(id);
+    	if (oA.isPresent()) {
+    		Account a = oA.get();
+    		Hibernate.initialize(a.getTransactions());
+    		return Optional.of(a);
+    	}
+    	return oA;
+    }
+    public Optional<Account> findByAccountNumber(Long num) { 
+    	Optional<Account> oA = acctRepo.findByAccountNumber(num);
+    	if (oA.isPresent()) {
+    		Account a = oA.get();
+    		Hibernate.initialize(a.getTransactions());
+    		return Optional.of(a);
+    	}
+    	return oA;    	
+    }
 }

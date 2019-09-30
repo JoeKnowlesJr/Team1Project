@@ -18,13 +18,13 @@ public class TransactionFormObject {
 		this.tType = tType;
 		switch (tType) {
 			case "Withdrawl":
-				type = TransactionType.WITHDRAWL;
+				type = TransactionType.Withdrawl;
 				break;
 			case "Deposit":
-				type = TransactionType.DEPOSIT;
+				type = TransactionType.Deposit;
 				break;
 			case "Transfer":
-				type = TransactionType.TRANSFER;
+				type = TransactionType.Transfer;
 				break;
 		}		
 	}

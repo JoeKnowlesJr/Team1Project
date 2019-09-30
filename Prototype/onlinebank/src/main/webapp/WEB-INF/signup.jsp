@@ -50,95 +50,83 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="inputs">
+		<div align="center">
+			<form:form method='post' modelAttribute="ufo">
+				<input type="hidden" name="_method" value="put" />
+				<fieldset class='fieldset-auto-width'>
+					<legend>New Customer</legend>
+					<table>
+						<tbody>
+							<c:if test="${error == true}">
+								<p class='alert'>That email address is in use!</p>
+							</c:if>
+							<tr>
+								<td>First name:</td>
+								<td><input type='text' name='firstName' required></td>
+							</tr>
+							<tr>
+								<td>Last name:</td>
+								<td><input type='text' name='lastName' required></td>
+							</tr>
+							<tr>
+								<td>Email:</td>
+								<td><input type='email' id='email' name='email' required></td>
+								<td><form:errors path="email" cssStyle="color: #ff0000;" /></td>
+							</tr>
+							<tr>
+								<td>Password:</td>
+								<td><input type='password' name='password1' required></td>
+							</tr>
+							<tr>
+								<td>Confirm:</td>
+								<td><input type='password' name='password2' required></td>
+							</tr>
+							<tr>
+								<td>Address1:</td>
+								<td><input type='text' name='line1' required></td>
+							</tr>
+							<tr>
+								<td>Address2:</td>
+								<td><input type='text' name='line2'></td>
+							</tr>
+							<tr>
+								<td>City:</td>
+								<td><input type='text' name='city' required></td>
+							</tr>
+							<tr>
+								<td>State:</td>
+								<td>
+									<select name='state' required>
+										<c:forEach items="${states}" var="s">
+											<option value="${s.abbr}">${s.name}</option>
+										</c:forEach>
+									</select>	
+								</td>
+							</tr>
+							<tr>
+								<td>Zip:</td>
+								<td><input type='text' name='zip' required></td>
+							</tr>
+							<tr>
+								<td>Inital Savings Deposit:</td>
+								<td><span class="input-symbol-ds"><form:input type="number" step="0.01" path="initalDeposit"></form:input></span></td>
+							</tr>
+						</tbody>
+					</table>
+					<input formaction='/createUser' id='btn_create' type='submit' value='Create Account' disabled /> 
+					<input type='reset' value='Clear' />
+				</fieldset>
+			</form:form>
 		</div>
-
-
-
-
-
-		<div class="inputs">
-			<div align="center">
-				<form:form method='post' modelAttribute="ufo"> 
-					<input type="hidden" name="_method" value="put" />
-					<fieldset class='fieldset-auto-width'>
-						<legend>New Customer</legend>
-						<table>
-							<tbody>
-								<c:if test="${error == true}">
-									<p class='alert'>That email address is in use!</p>
-								</c:if>
-								<tr>
-									<td>First name:</td>
-									<td><input type='text' name='firstName' required></td>
-								</tr>
-								<tr>
-									<td>Last name:</td>
-									<td><input type='text' name='lastName' required></td>
-								</tr>
-								<tr>
-									<td>Email:</td>
-									<td><input type='email' id='email' name='email' required></td>
-								</tr>
-								<tr>
-									<td>Password:</td>
-									<td><input type='password' name='password1' required></td>
-								</tr>
-								<tr>
-									<td>Confirm:</td>
-									<td><input type='password' name='password2' required></td>
-								</tr>
-								<tr>
-									<td>Address1:</td>
-									<td><input type='text' name='line1' required></td>
-								</tr>
-								<tr>
-									<td>Address2:</td>
-									<td><input type='text' name='line2'></td>
-								</tr>
-								<tr>
-									<td>City:</td>
-									<td><input type='text' name='city' required></td>
-								</tr>
-								<tr>
-									<td>State:</td>
-									<td><input type='text' name='state' required></td>
-								</tr>
-								<tr>
-									<td>Zip:</td>
-									<td><input type='text' name='zip' required></td>
-								</tr>
-							</tbody>
-						</table>
-						<input formaction='/createUser' id='btn_create' type='submit' value='Create Account' disabled /> 
-						<input type='reset' value='Clear' />
-					</fieldset>
-				</form:form>
-			</div>
-		</div>
+	</div>
 
 	<script>
 		const x = document.getElementById('signup');
 		const btnCreate = document.getElementById('btn_create');
 		const email = document.getElementById('email');
-
-		function validateSignup() {
-			var first = x["first"];
-			var last = x["last"];
-			var pw = x["pw"].value;
-			var pwc = x["pwc"].value;
-			var email = x["email"];
-			var addr1 = x["addr1"];
-			var addr2 = x["addr2"];
-			var city = x["city"];
-			var state = x["state"];
-			var zip = x["zip"];
-			alert("PW: " + pw + "   -   PWC: " + pwc);
-			if (!(pw === pwc)) {
-				alert("Passwords don't match!");
-				return false;
-			}
-			x.submit();
-		}
 
 		email.addEventListener('keyup', function(event) {
 			isValidEmail = email.checkValidity();
@@ -154,12 +142,7 @@
 		}
 	</script>
 
-
-
-
 	<!--end of footer-->
-
-
 	<!-- Bootstrap core JavaScript
            ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->

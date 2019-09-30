@@ -1,15 +1,13 @@
 package com.meritamerica.onlinebank.controllers;
 
-import java.security.Principal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.meritamerica.onlinebank.dto.LoginFormObject;
 import com.meritamerica.onlinebank.dto.UserFormObj;
+import com.meritamerica.onlinebank.models.State;
 
 @Controller
 public class BankController {
@@ -22,38 +20,32 @@ public class BankController {
 
 	@PostMapping("/signup")
 	public String signup(Model model) {
+		model.addAttribute("states", State.getStates());
 		model.addAttribute("ufo", new UserFormObj());
 		return "signup.jsp";
 	}
 	
-
+	@GetMapping("/fluff/{which}")
+	public String fluff(Model model, @PathVariable("which") String which) {
+		switch(which) {
+			case "about":
+				return "about.jsp";
+			case "contact":
+				return "contact.jsp";
+			case "locations":
+				return "locations.jsp";
+		}
+		model.addAttribute("lfo", new LoginFormObject());
+		return "index.jsp";
+	}
 	
 	/////////////////////////////////////////////
 
-	
-	//////////////////////////////////////////////
-	
 	@PostMapping("/admin")
 	public String admin() {
 		return "admin.jsp";
 	}
 	
-	
-	@RestController
-	@RequestMapping("/principal")
-	public class UserController {
-	 
-	    @GetMapping
-	    public Principal retrievePrincipal(Principal principal) {
-	        return principal;
-	    }
-	}
-	
-	
-	
-	
-	
-	
-	
+	//////////////////////////////////////////////
 	
 }

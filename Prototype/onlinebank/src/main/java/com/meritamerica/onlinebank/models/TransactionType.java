@@ -1,21 +1,13 @@
 package com.meritamerica.onlinebank.models;
 
 public enum TransactionType {
-	WITHDRAWL("Withdrawl"),
-	DEPOSIT("Deposit"),
-	TRANSFER("Transfer"),
-	ACCRUE("Accrue"),
-	INVALID("Invalid");
+	Withdrawl,
+	Deposit,
+	Transfer,
+	Accrue,
+	Invalid;
 	
-    private final String typeName;
-
-    private TransactionType(String value) {
-        typeName = value;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
+    private TransactionType() {}
     
     public String[] getUserTypes() {
     	return new String[]{"Withdrawl", "Deposit", "Transfer"};

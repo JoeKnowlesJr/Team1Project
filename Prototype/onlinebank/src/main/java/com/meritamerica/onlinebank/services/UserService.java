@@ -5,11 +5,13 @@ import java.util.Optional;
 import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.meritamerica.onlinebank.dto.UserFormObj;
-import com.meritamerica.onlinebank.models.SavingsAccount;
+import com.meritamerica.onlinebank.models.Account;
+import com.meritamerica.onlinebank.models.AccountType;
 import com.meritamerica.onlinebank.models.User;
 import com.meritamerica.onlinebank.repository.AccountRepository;
 import com.meritamerica.onlinebank.repository.AddressRepository;
@@ -32,8 +34,16 @@ public class UserService implements IUserService {
     public void deleteUser(User u) { uRepo.delete(u); }
     
     public Optional<User> findUserByEmail(String email) {
-    	Optional<User> u = uRepo.findByEmail(email); 
-    	return u;
+    	if (email.equalsIgnoreCase("admin")) {
+    		return User.getAdminUser();
+    	}
+    	Optional<User> oU = uRepo.findByEmail(email);
+    	if (oU.isPresent()) {
+    		User u = oU.get();
+    		Hibernate.initialize(u.getAccounts());
+    		return Optional.of(u);
+    	}
+    	return oU;
     }
     
     public Optional<User> findUserById(Long id) { return uRepo.Id(id); }
@@ -48,7 +58,7 @@ public class UserService implements IUserService {
         }
         User u = ufo.getUser();
         addrRepo.save(u.getAddress());
-        SavingsAccount acct = new SavingsAccount((System.currentTimeMillis() / 1000), 100.0, 1.2, u);
+        Account acct = new Account((System.currentTimeMillis() / 1000), AccountType.Savings, ufo.getInitalDeposit(), 1.2, u);
     	u.addAccount(acct);
     	acctRepo.save(acct);
         return uRepo.save(u);       

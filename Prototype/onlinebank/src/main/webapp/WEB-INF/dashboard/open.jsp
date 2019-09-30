@@ -27,6 +27,9 @@
 								<td>Account Type:</td>
 								<td><form:select path="acctType" required="true">
 										<option value="">Account Type</option>
+										<c:forEach items="${dm.getAccountTypes()}" var="t">
+											
+										</c:forEach>
 										<form:options />
 									</form:select></td>
 							</tr>

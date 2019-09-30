@@ -22,5 +22,5 @@ function myFunction() {
 	}
 }
 $('#login-button').click(function() {
-	$('.login-form').toggleClass('open');
+	$('.login-container').toggleClass('hidden-login show-login');
 })

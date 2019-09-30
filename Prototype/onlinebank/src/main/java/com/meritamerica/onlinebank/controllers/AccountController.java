@@ -13,17 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.models.Account;
 import com.meritamerica.onlinebank.models.AccountType;
-import com.meritamerica.onlinebank.models.CdAccount;
-import com.meritamerica.onlinebank.models.DbaCheckingAccount;
-import com.meritamerica.onlinebank.models.PersonalCheckingAccount;
-import com.meritamerica.onlinebank.models.RegularIra;
-import com.meritamerica.onlinebank.models.RolloverIra;
-import com.meritamerica.onlinebank.models.RothIra;
-import com.meritamerica.onlinebank.models.SavingsAccount;
 import com.meritamerica.onlinebank.models.Transaction;
 import com.meritamerica.onlinebank.models.TransactionType;
 import com.meritamerica.onlinebank.models.User;
-import com.meritamerica.onlinebank.models.UserSession;
 import com.meritamerica.onlinebank.services.AccountService;
 import com.meritamerica.onlinebank.services.TransactionService;
 import com.meritamerica.onlinebank.services.UserService;
@@ -34,7 +26,6 @@ public class AccountController {
 	@Autowired private UserService uService;
 	@Autowired private AccountService aService;
 	@Autowired private TransactionService tService;
-	@Autowired UserSession uSession;
 	
 	public AccountController() {}
 	
@@ -57,45 +48,48 @@ public class AccountController {
 		Account a = null;
 		switch(dm.nafo.getAcctType()) {
 		
-		case SAVINGS:
+		case Savings:
 			for (Account aa : userAccounts) {
-				if (aa instanceof SavingsAccount) {
+				if (aa.getAccountType() == AccountType.Savings) {
 					dm.error = "Only one savings account allowed per account holder!";
 					break;
 				}
 			}
-			a = new SavingsAccount(
+			a = new Account(
 						System.currentTimeMillis() / 10000,
+						AccountType.Savings,
 						0.0,
 						1.2,
 						u
 					);
 			break;
-		case CHECKING:
+		case Checking:
 			for (Account aa : userAccounts) {
-				if (aa instanceof PersonalCheckingAccount) {
+				if (aa.getAccountType() == AccountType.Checking) {
 					dm.error = "Only one personal checking account allowed per account holder!";
 					break;
 				}
 			}
-			a = new PersonalCheckingAccount(
+			a = new Account(
 						System.currentTimeMillis() / 10000,
+						AccountType.Checking,
 						0.0,
 						0.6,
 						u
 					);
 			break;
-		case DBACHECK:
+		case DbaChecking:
 			int dbas = 0;
 			for (Account aa : userAccounts) {
-				if (aa instanceof DbaCheckingAccount) { ++dbas; }
+				if (aa.getAccountType() == AccountType.DbaChecking) { ++dbas; }
 				if (dbas > 2) {
 					dm.error = "Only three DBA checking accounts allowed per account holder!";
 					break;
 				}
 			}
-			a = new DbaCheckingAccount(
+			a = new Account(
 						System.currentTimeMillis() / 10000,
+						AccountType.DbaChecking,
 						0.0,
 						0.6,
 						u
@@ -104,41 +98,45 @@ public class AccountController {
 		case CD:
 			List<Account> cds = new ArrayList<>();
 			for (Account aa : userAccounts) {
-				if (aa instanceof CdAccount) { cds.add(((CdAccount) aa)); }
+				if (aa.getAccountType() == AccountType.CD) { cds.add((aa)); }
 				//Add display of all CD accounts
 			}
-			a = new CdAccount(
+			a = new Account(
 					System.currentTimeMillis() / 10000,
+					AccountType.CD,
 					0.0,
 					0.0,
 					u
 				);			
 			break;
-		case REGIRA:
-			a = new RegularIra(
+		case RegIra:
+			a = new Account(
 					System.currentTimeMillis() / 10000,
+					AccountType.RegIra,
 					0.0,
 					0.0,
 					u
 				);				
 			break;
-		case ROTHIRA:
-			a = new RothIra(
+		case RothIra:
+			a = new Account(
 					System.currentTimeMillis() / 10000,
+					AccountType.RothIra,
 					0.0,
 					0.0,
 					u
 				);				
 			break;
-		case ROLLIRA:
-			a = new RolloverIra(
+		case RollIra:
+			a = new Account(
 					System.currentTimeMillis() / 10000,
+					AccountType.RollIra,
 					0.0,
 					0.0,
 					u
 				);				
 			break;
-		case CLOSED:
+		case Closed:
 			break;
 		default:
 			break;
@@ -147,28 +145,32 @@ public class AccountController {
 			model.addAttribute("error", true);
 			return "dashboard/dashboard.jsp";
 		}
-		Transaction t = new Transaction(TransactionType.DEPOSIT, dm.nafo.getAmount(), Account.CASH, a, "Initial Deposit");
+		Transaction t = new Transaction(TransactionType.Deposit, dm.nafo.getAmount(), Account.CASH, a, "Initial Deposit");
 		tService.saveTransaction(t);
 		a.transact(t);
 		aService.createAccount(a);
 		u.addAccount(a);
 		uService.updateUser(u);
-		
+		dm.setDefaults(u);
 		dm.account = a;
 		model.addAttribute("dm", dm);
-		return "dashboard/dashboard.jsp";		
+		return "redirect:/dashboard";	
 	}
 	
 	@PostMapping("/closeAccount")
 	public String closeAccount(Model model, @ModelAttribute("dm") DashModel dm) {
+		int diff = 0;
 		dm.error = "";
 		Long acctToClose = dm.cafo.getAcctToClose();
 		Long balanceTarget = dm.cafo.getBalanceTarget();
 		Optional<Account> oA = aService.findByAccountNumber(acctToClose);
 		Optional<Account> oB = aService.findByAccountNumber(balanceTarget);
 		Account a = null, b = null;
-		if (acctToClose == balanceTarget) {
+		diff = acctToClose.compareTo(balanceTarget);
+		if (diff == 0) {
 			dm.error = "Balance must be deposited into different account!";
+			model.addAttribute("dm", dm);
+			return "/dashboard/dashboard.jsp";
 		}
 		if (oA.isPresent()) {
 			a = oA.get();
@@ -184,16 +186,19 @@ public class AccountController {
 			model.addAttribute("dm", dm);
 			return "dashboard/close.jsp";
 		}
-		Transaction tClose = new Transaction(TransactionType.WITHDRAWL, a.getBalance(), Account.CASH, a, "Closed Account");
-		Transaction tDep = new Transaction(TransactionType.DEPOSIT, a.getBalance(), Account.CASH, b, "From closing account: " + acctToClose);
+		Transaction tClose = new Transaction(TransactionType.Withdrawl, a.getBalance(), Account.CASH, a, "Closed Account");
+		Transaction tDep = new Transaction(TransactionType.Deposit, a.getBalance(), Account.CASH, b, "From closing account: " + acctToClose);
 		
 		a.transact(tClose);
 		b.transact(tDep);
 		
-		a.setAccountType(AccountType.CLOSED);
-//		aService.updateAccount(a);
-//		aService.updateAccount(b);
+		a.setAccountType(AccountType.Closed);
+		a.getUser().getAccounts().remove(a);
+		aService.updateAccount(a);
+		aService.updateAccount(b);
 		uService.updateUser(b.getUser());
+		dm.setDefaults(b.getUser());
+		dm.account = b;
 		model.addAttribute("dm", dm);
 		return "redirect:/dashboard";
 	}

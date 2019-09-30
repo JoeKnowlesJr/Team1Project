@@ -1,8 +1,5 @@
 package com.meritamerica.onlinebank.controllers;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,9 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.dto.LoginFormObject;
 import com.meritamerica.onlinebank.dto.UserFormObj;
-import com.meritamerica.onlinebank.models.Account;
 import com.meritamerica.onlinebank.models.User;
-import com.meritamerica.onlinebank.models.UserSession;
 import com.meritamerica.onlinebank.services.UserService;
 
 @Controller
@@ -32,7 +27,6 @@ import com.meritamerica.onlinebank.services.UserService;
 public class UserController {
 	
 	@Autowired UserService uService;
-	@Autowired UserSession uSession;
 	
 	@PutMapping("/createUser")
 	public String create(Model model, @ModelAttribute("ufo") @Valid UserFormObj ufo, BindingResult result) {
@@ -48,7 +42,7 @@ public class UserController {
         	model.addAttribute("ufo", ufo);
             return "signup.jsp";	        
 	    }
-	    
+	    model.addAttribute("msg", "Account created!  Please log in.");
         return "redirect:/";
 	}
 	
@@ -66,7 +60,6 @@ public class UserController {
 	public String deleteUser(@PathVariable("id") Long id) {
 		Optional<User> oU = uService.findUserById(id);
 		if (oU.isPresent()) {
-			// TODO confirm delete
 			uService.deleteUser(oU.get());
 		}
 		return "index.jsp";
@@ -78,21 +71,22 @@ public class UserController {
 			Optional<User> oU = uService.findUserByEmail(lfo.getEmail());
 			if (oU.isPresent()) {
 				User u = (User) oU.get();
-				if (u.auth(lfo.getPassword())) {
-					uSession = new UserSession(u, Date.from(Instant.now()));
-					request.getSession().setAttribute("user-session", uSession);
-					DashModel dm = new DashModel();
-					dm.user = u;
-					List<Account> aa = (List<Account>)u.getAccounts();
-					if (!aa.isEmpty())
-						dm.account = ((List<Account>)u.getAccounts()).iterator().next();				
-					model.addAttribute("dm", dm);
+				if (u.auth(lfo.getPassword())) {	
+					request.getSession().setAttribute("user", u);
 					return "redirect:/dashboard";
 				}			
 			}
         }
     	lfo.setFailed(true);
     	model.addAttribute("lfo", lfo);
+		return "index.jsp";
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpServletRequest request, Model model) {
+		request.getSession().setAttribute("user", null);
+		model.addAttribute("logout", true);
+		model.addAttribute("lfo", new LoginFormObject());
 		return "index.jsp";
 	}
 	

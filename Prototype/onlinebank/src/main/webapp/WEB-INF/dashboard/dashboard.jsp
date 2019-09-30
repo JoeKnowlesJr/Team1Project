@@ -9,22 +9,21 @@
 <link rel="stylesheet" type="text/css" href="dashStyle.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>User Dashboard</title>
-<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 </head>
 <body>
+	<c:set var="usession" value="re"></c:set>
 	<img src="img/MeritBankLogo.gif" alt="MeritBankOfAmericaLogo"
 		width="600" />
 	<div id="top_links">
 		<div id="header">
-			<h2>Your Number One Bank
-				${user-session.getUser().getFirstName()}</h2>
+			<h2>Your Number One Bank</h2>
 		</div>
 		<div id="navigation">
 			<ul>
-				<li><a href="index.jsp">HOME</a></li>
-				<li><a href="locations.jsp">LOCATIONS</a></li>
-				<li><a href="about.jsp">ABOUT US</a></li>
-				<li><a href="contact.jsp">CONTACT US </a></li>
+				<li><a href="/logout">LOG OUT</a></li>
+				<li><a href="/fluff/locations">LOCATIONS</a></li>
+				<li><a href="/fluff/about">ABOUT US</a></li>
+				<li><a href="/fluff/contact">CONTACT US</a></li>
 			</ul>
 			<div id="formcontainer">
 				<form class="navbar-form navbar-right">
@@ -41,7 +40,7 @@
 					<div class="bar"></div>
 				</button>
 				<div class="w3-dropdown-content w3-bar-block w3-border">
-					<a href="index.jsp" class="w3-bar-item w3-button">HOME</a> <a
+					<a href="login.jsp" class="w3-bar-item w3-button">LOGIN</a> <a
 						href="locations.jsp" class="w3-bar-item w3-button">LOCATIONS</a> <a
 						href="about.jsp" class="w3-bar-item w3-button">ABOUT US</a> <a
 						href="contact.jsp" class="w3-bar-item w3-button">CONTACT US</a>
@@ -57,48 +56,22 @@
 						<div class="w3-respnsive">
 							<p style="font-size: 20px">${dm.user.getName()}</p>
 							<p style="font-size: 15px">${dm.user.getEmail()}</p>
-							<p style="font-size: 13px">${dm.user.getAddress().getCity()}, ${dm.user.getAddress().getState()}</p>
-							<p style="font-size: 13px">Customer since ${dm.user.getCreatedDate()}</p>
+							<p style="font-size: 13px">${dm.user.getAddress().getCity()},
+								${dm.user.getAddress().getState()}</p>
+							<p style="font-size: 13px">Customer since
+								${dm.user.getCreatedDate()}</p>
 
 						</div>
 						<div id="newAcct-view">
-							<div class="w3-respnsive">
-								<div class="w3-respnsive">
-									<select onchange="toggleAcctAction(value)">
-										<option label="Open Account" value="open">
-										<option label="Close Account" value="close">
-									</select>
-								</div>
-								<h3>Open a new account</h3>
-								<form:form id='newacct' method='post' modelAttribute="dm.nafo"
-									style="margin-top: 25px;">
-									<fieldset class='fieldset-auto-width'>
-										<legend>New Account</legend>
-										<table class="w3-table-all w3-hoverable">
-											<tbody>
-												<tr class="w3-light-grey">
-													<td>Account Type:</td>
-													<td><form:select path="acctType" required="true">
-															<option value="">Account Type</option>
-															<form:options />
-														</form:select></td>
-												</tr>
-												<tr>
-													<td>Deposit Amount:</td>
-													<td><span class="input-symbol-ds"><form:input
-																type="number" step="0.01" path="amount"></form:input></span></td>
-												</tr>
-												<tr>
-													<td><form:input type="hidden" path="user_id"
-															value="${dm.user.getId()}"></form:input></td>
-													<td><input formaction='/createAccount' type='submit'
-														value='Open Account' /></td>
-												</tr>
-											</tbody>
-										</table>
-									</fieldset>
-								</form:form>
-							</div>						
+							<c:choose>
+								<c:when test="${dm.showClose == true}">
+									<jsp:include page="close.jsp" />
+								</c:when>
+								<c:otherwise>
+									<jsp:include page="open.jsp" />
+								</c:otherwise>
+							</c:choose>
+
 						</div>
 					</div>
 					<!-- Top right box-->
@@ -115,11 +88,24 @@
 								</thead>
 								<tr>
 									<td>${dm.account.getAccountNumber()}</td>
-									<td>${dm.account.getAccountType().getTypeName()}</td>
+									<td>${dm.account.acctType()}</td>
 									<th>${dm.account.getBalance()}</</th>
 									<th>${dm.account.getRate()}</th>
 								</tr>
 							</table>
+						</div>
+						<div>
+							<table class="scroll-table" style="height: 300px; overflow-y: auto;">
+							<tbody>
+								<c:forEach items="${dm.account.getTransactions()}" var="t">
+									<tr>
+										<td>${t.getType()}</td>
+										<td>${t.getDescription()}</td>
+										<td>${t.getAmount()}</td>
+										<td>${t.getCreated()}</td>
+									</tr>
+								</c:forEach>
+							</tbody></table>
 						</div>
 					</div>
 				</div>
@@ -136,24 +122,27 @@
 								</tr>
 							</thead>
 							<c:forEach items="${dm.user.getAccounts()}" var="acct">
-								<tr onclick="updateAcctView(${acct.getId()});">
-									<td>${acct.getAccountNumber()}</td>
-									<td>${acct.getAccountType().getTypeName()}</td>
-									<th>${acct.getBalance()}</th>
-									<th>${acct.getRate()}</th>
-								</tr>
+								<c:if test="${acct.acctType() != 'Closed'}">
+									<tr onclick="updateAcctView(${acct.getId()});">
+										<td>${acct.getAccountNumber()}</td>
+										<td>${acct.acctType()}</td>
+										<th>${acct.getBalance()}</th>
+										<th>${acct.getRate()}</th>
+									</tr>
+								</c:if>
+
 							</c:forEach>
 						</table>
 					</div>
 					<!--Bottom right -->
 					<div class="dsubcontents dlg md sm">
-						<span>Transaction</span>
-						<select name="tType" id="tType" onchange="transactionSelect(value)">
+						<span>Transaction</span> <select name="tType" id="tType"
+							onchange="transactionSelect(value)">
 							<option value="">Select Transaction</option>
 							<c:forEach items="${dm.getTransactionTypes()}" var="t">
 								<option value="${t}">${t}</option>
 							</c:forEach>
-						</select>					
+						</select>
 						<div id="transaction-view" class="w3-responsive">
 							<form:form id='transaction' method='post' modelAttribute="dm.tfo">
 								<fieldset class='fieldset-auto-width'>

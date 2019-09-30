@@ -8,14 +8,14 @@
       <link rel="stylesheet" type="text/css" href="css/style.css">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Merit Banking</title>
-      <link href="style.css" rel="stylesheet" type="text/css">
       <link href="css/bank.css" rel="stylesheet" type="text/css">
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-      <!-- <script type="text/javascript" src="JavaScript.js"></script> -->
-      <script></script>
    </head>
    <body>
       <img src="img/MeritBankLogo.gif" alt="MeritBankOfAmericaLogo" width="600"/>
+      <c:if test="${logout == true}">
+      	<p class="alert">You have been successfully logged out!</p>
+      </c:if>
       <div id="top_links">
          <div id="header">
             <h2>Your Number One Bank</h2>
@@ -23,23 +23,25 @@
          <div id="navigation">
                <div class="container">
                   <button id="login-button">log in</button>
-                  <div id="login-container" class="hidden-login">
-                  	<form:form action="/signin" method="post" modelAttribute="lfo">
-                        <c:if test="${lfo.isFailed()} == true">
-                           <p class='alert'>Invalid credentials!</p>
-                        </c:if>
-                        <form:input type="text" placeholder="Username" path="email" required="required"></form:input>
-                        <form:input type="password" placeholder="Password" path="password" required="required"></form:input>
-                        <input type="submit" value="Sign In"/>
-                     </form:form>
-                     <form><button formaction="/signup" formmethod="post">Sign Up</button></form>
-                  </div>
+	                   <div id="login-container" class="show-login">
+	                  	<form:form action="/signin" method="post" modelAttribute="lfo">
+	                        <c:if test="${lfo.isFailed() == true}">
+	                           <p class='alert'>Invalid credentials!</p>
+	                        </c:if>
+	                        <form:input type="text" placeholder="Username" path="email" required="required"></form:input>
+	                        <form:input type="password" placeholder="Password" path="password" required="required"></form:input>
+	                        <input type="submit" value="Sign In"/>
+	                     </form:form>
+	                     <form><button formaction="/signup" formmethod="post">Sign Up</button></form>
+	                  </div>                    
                </div>
-               <ul>
-                  <li><a href="locations.jsp">LOCATIONS</a></li>
-                  <li><a href="about.jsp">ABOUT US</a></li>
-                  <li><a href="contact.jsp">CONTACT US </a></li>
+               <form id="fluffform">
+               <ul id="navList">
+                  <li id="locations"><a href="/fluff/locations">LOCATIONS</a></li>
+                  <li id="about"><a href="/fluff/about">ABOUT US</a></li>
+                  <li id="contact"><a href="/fluff/contact">CONTACT US</a></li>
                </ul>
+               </form>
                <div id="formcontainer">
                   <form class="navbar-form navbar-right">
                      <input class="form-control col-lg-8" type="text" placeholder="  Search" aria-label="Search">
@@ -63,6 +65,11 @@
          </div>
          
          <div id="wrapper">
+         	<div id="msgs">
+         		<c:if test="${msg != null}">
+         			<p>${msg}</p>
+         		</c:if>
+         	</div>
             <div id="main_content">
                <div class="row1">
                   <div class="subcontents lg md sm">
@@ -82,7 +89,7 @@
                      </div>
                   </div>
                   <div class="subcontents lg md sm">
-                     <h1 class="content_header">Mission</span>Statement</h1>
+                     <h1 class="content_header">Mission Statement</h1>
                      <p> "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
                   </div>
                </div>
@@ -106,36 +113,57 @@
    <!-- Bootstrap core JavaScript
            ================================================== -->
            <!-- Placed at the end of the document so the pages load faster -->
-           <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+           <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
            <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
            <script src="../../assets/js/vendor/popper.min.js"></script>
            <script src="../../dist/js/bootstrap.min.js"></script>
       </div>
       <script type="text/javascript" src="JavaScript.js"></script>
       <script>
-      window.onscroll = function() {
-    		myFunction()
-    	};
+//       window.onscroll = function() {
+//     		myFunction()
+//     	};
 
-    	// Get the navbar
-    	var navbar = document.getElementById("navigation");
+//     	// Get the navbar
+//     	var navbar = document.getElementById("navigation");
 
-    	// Get the offset position of the navbar
-    	var sticky = navbar.offsetTop;
+//     	// Get the offset position of the navbar
+//     	var sticky = navbar.offsetTop;
 
-    	// Add the sticky class to the navbar when you reach its scroll position. Remove
-    	// "sticky" when you leave the scroll position
-    	function myFunction() {
-    		if (window.pageYOffset >= sticky) {
-    			navbar.classList.add("sticky")
-    		} else {
-    			navbar.classList.remove("sticky");
-    		}
-    	}
-        
+//     	// Add the sticky class to the navbar when you reach its scroll position. Remove
+//     	// "sticky" when you leave the scroll position
+//     	function myFunction() {
+//     		if (window.pageYOffset >= sticky) {
+//     			navbar.classList.add("sticky")
+//     		} else {
+//     			navbar.classList.remove("sticky");
+//     		}
+//     	}
+
+//     	function showFluff($val) {
+//         	alert($val);
+//         	val ff = document.getElementById("fluffform");
+//         	ff.action = "/fluff/" + which;
+//         	alert(ff.action);
+//         	ff.submit();
+// 		}
+
     	$('#login-button').click(function() {
+        	alert('click');
     		$('#login-container').toggleClass('hidden-login show-login');
     	});
+    	
+    	
+// 		window.onload = function() {
+// 			alert('onload');
+// 			 var l = document.getElementById('navList').getElementsByTagName('li');
+
+// 			 for (var i=0; i<l.length; i++)
+// 			 {
+// 			  l[i].addEventListener('click', function() { alert(this.id); showFluff(this.id); },false);
+// 			 }			
+
+// 		}
       </script>
    </body>
 </html>

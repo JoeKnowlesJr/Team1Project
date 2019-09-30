@@ -19,10 +19,8 @@
 						<td>${account.toString()}</td>
 						<td>									
 						    <form:select  path="tAcct" required="true">
-							    <form:option value="">Select Target</form:option>
-							    <c:forEach items="${accounts}" var="a">
-							    	<form:option value="${a.getAccountNumber()}">${a.toString()}</form:option>
-							    </c:forEach>
+							    <form:option value="">From</form:option>
+							    <form:options items="${dm.getNonAccountTypes()}"/>
 						    </form:select>								
 						</td>
 						<td><span class="dollar-sign">$</span><form:input id="amount-input" type="number" step="0.01" path="amount"></form:input></td>	

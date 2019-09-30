@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +40,6 @@ public class User implements Serializable {
     private Address address;
     private List<Account> accounts;
     
-//    private Set<Account> userAccounts;
     public User() {
 		accounts = new ArrayList<>(); 
 	}
@@ -49,7 +50,7 @@ public class User implements Serializable {
 		email = e;
 		password = p;
 		address = a;
-		address.setUser(this);
+		if (a != null) address.setUser(this);
 		accounts = new ArrayList<>(); 
 	}
 
@@ -124,5 +125,16 @@ public class User implements Serializable {
 	@Transient
 	public String getCreatedDate() {
         return new SimpleDateFormat("ddMMMyyyy").format(userCreated);
+	}
+	
+	@Transient
+	public static Optional<User> getAdminUser() {
+		Address a = new Address("123 Admin St", "", "Adminton", "Adminnesota", "25333");
+		return Optional.of(new User("Admin", "", "admin", "admin", a));
+	}
+	
+	@Override
+	public String toString() {
+		return firstName + " " + lastName;
 	}
 }
