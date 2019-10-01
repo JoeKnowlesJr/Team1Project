@@ -23,7 +23,7 @@
          <div id="navigation">
                <div class="container">
                   <button id="login-button">log in</button>
-	                   <div id="login-container" class="show-login">
+	                   <div id="login-container" class="hidden-login">
 	                  	<form:form action="/signin" method="post" modelAttribute="lfo">
 	                        <c:if test="${lfo.isFailed() == true}">
 	                           <p class='alert'>Invalid credentials!</p>
@@ -120,50 +120,11 @@
       </div>
       <script type="text/javascript" src="JavaScript.js"></script>
       <script>
-//       window.onscroll = function() {
-//     		myFunction()
-//     	};
-
-//     	// Get the navbar
-//     	var navbar = document.getElementById("navigation");
-
-//     	// Get the offset position of the navbar
-//     	var sticky = navbar.offsetTop;
-
-//     	// Add the sticky class to the navbar when you reach its scroll position. Remove
-//     	// "sticky" when you leave the scroll position
-//     	function myFunction() {
-//     		if (window.pageYOffset >= sticky) {
-//     			navbar.classList.add("sticky")
-//     		} else {
-//     			navbar.classList.remove("sticky");
-//     		}
-//     	}
-
-//     	function showFluff($val) {
-//         	alert($val);
-//         	val ff = document.getElementById("fluffform");
-//         	ff.action = "/fluff/" + which;
-//         	alert(ff.action);
-//         	ff.submit();
-// 		}
 
     	$('#login-button').click(function() {
-        	alert('click');
     		$('#login-container').toggleClass('hidden-login show-login');
     	});
     	
-    	
-// 		window.onload = function() {
-// 			alert('onload');
-// 			 var l = document.getElementById('navList').getElementsByTagName('li');
-
-// 			 for (var i=0; i<l.length; i++)
-// 			 {
-// 			  l[i].addEventListener('click', function() { alert(this.id); showFluff(this.id); },false);
-// 			 }			
-
-// 		}
       </script>
    </body>
 </html>

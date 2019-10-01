@@ -93,8 +93,6 @@
 									<th>${dm.account.getRate()}</th>
 								</tr>
 							</table>
-						</div>
-						<div>
 							<table class="scroll-table" style="height: 300px; overflow-y: auto;">
 							<tbody>
 								<c:forEach items="${dm.account.getTransactions()}" var="t">
@@ -206,7 +204,7 @@
 			       document.getElementById("account-view").innerHTML = mygetrequest.responseText;
 			      }
 			      else{
-			       alert("An error has occured making the request " + mygetrequest.readyState + " " + mygetrequest.status);
+			       alert("An error has occured updating account-view" + mygetrequest.readyState + " " + mygetrequest.status);
 			      }
 			     }
 			    }

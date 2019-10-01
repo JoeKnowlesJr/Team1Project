@@ -29,8 +29,8 @@ public class TransactionController {
 			return "/dashboard/dashboard.jsp";
 		}
 		Transaction t = dm.tfo.getTransaction(dm.account);
-		tService.saveTransaction(t);
 		dm.account.transact(t);
+		tService.saveTransaction(t);
 		uService.updateUser(dm.account.getUser());
 		dm.setTfoError(false);
 		model.addAttribute("dm", dm);

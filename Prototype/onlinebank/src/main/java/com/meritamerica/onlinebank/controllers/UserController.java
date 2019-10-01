@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.dto.LoginFormObject;
 import com.meritamerica.onlinebank.dto.UserFormObj;
+import com.meritamerica.onlinebank.models.State;
 import com.meritamerica.onlinebank.models.User;
 import com.meritamerica.onlinebank.services.UserService;
 
@@ -33,6 +34,7 @@ public class UserController {
         if (result.hasErrors()) {
         	model.addAttribute("error", true);
         	model.addAttribute("ufo", ufo);
+    		model.addAttribute("states", State.getStates());
             return "signup.jsp";
         }
 		User u = createUserAccount(ufo, result);
@@ -40,6 +42,7 @@ public class UserController {
 	        result.rejectValue("email", "That email address is already in use!");
         	model.addAttribute("error", true);
         	model.addAttribute("ufo", ufo);
+    		model.addAttribute("states", State.getStates());
             return "signup.jsp";	        
 	    }
 	    model.addAttribute("msg", "Account created!  Please log in.");

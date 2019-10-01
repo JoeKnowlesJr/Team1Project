@@ -6,7 +6,9 @@ public enum AccountType {
 	Savings,
 	Checking,
 	DbaChecking,
-	CD,
+	CD12,
+	CD24,
+	CD36,
 	RegIra,
 	RothIra,
 	RollIra,
@@ -17,10 +19,10 @@ public enum AccountType {
 	public static String[] getTypes() {
 		return new String[] {
 			"Savings",
-			"Per Chk",
-			"Dba Chk",
-			"  C D  ",
-			"Reg Ira",
+			"Checking",
+			"DbaChecking",
+			"CD",
+			"RegIra",
 			"RothIra",
 			"RollIra"
 		};			      

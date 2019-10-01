@@ -20,7 +20,6 @@ import com.meritamerica.onlinebank.services.AccountService;
 @Controller
 public class DashboardController {
 	private final AccountService service;
-	private DashModel mdm;
 	
 	public DashboardController(AccountService b) { service = b; }
 	
@@ -34,8 +33,14 @@ public class DashboardController {
 	
 	@GetMapping("/dashboard")
 	public String dashGet(HttpServletRequest request, Model model) {
+		Long acctId = (Long)request.getSession().getAttribute("acct");
 		User user = (User) request.getSession().getAttribute("user");
 		DashModel dm = DashModel.getDefault(user);
+		if (acctId != null) {
+			Optional<Account> oA = service.findAccountById(acctId);
+			if (oA.isPresent())
+				dm.setAccount(oA.get());
+		}
 		model.addAttribute("dm", dm);
 		return "/dashboard/dashboard.jsp";
 	}
@@ -56,15 +61,17 @@ public class DashboardController {
 	public String dOpen(HttpServletRequest request, Model model) {
 		User u = (User)request.getSession().getAttribute("user");
 		DashModel dm = DashModel.getDefault(u);
+		model.addAttribute("dm", dm);
 		return "/dashboard/open.jsp";
 	}
 	
 	@GetMapping("/dashboard/close")
 	public String dClose(HttpServletRequest request, Model model) {
 		User u = (User) request.getSession().getAttribute("user");
-		model.addAttribute("user", u);
+		DashModel dm = DashModel.getDefault(u);
+		model.addAttribute("dm", dm);
 		List<Account> acctList = new ArrayList<>();
-		for (Account a : mdm.getUser().getAccounts()) 
+		for (Account a : u.getAccounts()) 
 			if (a.acctType() != "Closed") 
 				acctList.add(a);
 		model.addAttribute("accts", acctList);

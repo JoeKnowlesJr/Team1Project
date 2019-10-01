@@ -3,6 +3,9 @@ package com.meritamerica.onlinebank.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -13,11 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.meritamerica.onlinebank.dto.DashModel;
 import com.meritamerica.onlinebank.models.Account;
 import com.meritamerica.onlinebank.models.AccountType;
+import com.meritamerica.onlinebank.models.CdOption;
 import com.meritamerica.onlinebank.models.Transaction;
 import com.meritamerica.onlinebank.models.TransactionType;
 import com.meritamerica.onlinebank.models.User;
 import com.meritamerica.onlinebank.services.AccountService;
-import com.meritamerica.onlinebank.services.TransactionService;
 import com.meritamerica.onlinebank.services.UserService;
 
 @Controller
@@ -25,7 +28,6 @@ import com.meritamerica.onlinebank.services.UserService;
 public class AccountController {
 	@Autowired private UserService uService;
 	@Autowired private AccountService aService;
-	@Autowired private TransactionService tService;
 	
 	public AccountController() {}
 	
@@ -36,13 +38,10 @@ public class AccountController {
 	}
 	
 	@PostMapping("/createAccount")
-	public String createAccount(@ModelAttribute("dm") DashModel dm, Model model) {
-		User u = null;
-		Optional<User> oU = uService.findUserById(dm.getNafo().getUser_id());
-		if (oU.isPresent()) {
-			u = (User)oU.get();
-		} else {
-			u = new User();
+	public String createAccount(HttpServletRequest request, @ModelAttribute("dm") DashModel dm, Model model) {
+		User u = (User) request.getSession().getAttribute("user");
+		if (u == null) {
+			return "redirect:/";
 		}
 		List<Account> userAccounts = u.getAccounts();
 		Account a = null;
@@ -95,20 +94,34 @@ public class AccountController {
 						u
 					);
 			break;
-		case CD:
+		case CD12:
+		case CD24:
+		case CD36:
+			double amount = dm.nafo.getAmount();
 			List<Account> cds = new ArrayList<>();
 			for (Account aa : userAccounts) {
-				if (aa.getAccountType() == AccountType.CD) { cds.add((aa)); }
+				AccountType at = aa.getAccountType(); 
+				if ((at == AccountType.CD12) || (at == AccountType.CD24) || (at == AccountType.CD36)) { cds.add((aa)); }
 				//Add display of all CD accounts
 			}
-			a = new Account(
-					System.currentTimeMillis() / 10000,
-					AccountType.CD,
-					0.0,
-					0.0,
-					u
-				);			
-			break;
+			
+			double rateMul = 0.0;
+			if (amount < 5000.00) {
+				rateMul = 1;
+			} else if (amount < 50000.00) {
+				rateMul = 3;
+			} else {
+				rateMul = 2;
+			}
+			List<CdOption> options = new ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				options.add(new CdOption(i, (int)rateMul * 1, (double)rateMul * 1.5));
+			}
+			model.addAttribute("options", options);
+			model.addAttribute("cds", cds);
+			model.addAttribute("amount", amount);
+			
+			return "openCd.jsp";
 		case RegIra:
 			a = new Account(
 					System.currentTimeMillis() / 10000,
@@ -146,9 +159,9 @@ public class AccountController {
 			return "dashboard/dashboard.jsp";
 		}
 		Transaction t = new Transaction(TransactionType.Deposit, dm.nafo.getAmount(), Account.CASH, a, "Initial Deposit");
-		tService.saveTransaction(t);
+//		aService.createAccount(a);
 		a.transact(t);
-		aService.createAccount(a);
+//		tService.saveTransaction(t);
 		u.addAccount(a);
 		uService.updateUser(u);
 		dm.setDefaults(u);
@@ -157,21 +170,34 @@ public class AccountController {
 		return "redirect:/dashboard";	
 	}
 	
+	@PostMapping("/openCd")
+	public String openCd(HttpServletRequest request) {
+		User u = (User) request.getSession().getAttribute("user");
+		double amount = (double) request.getSession().getAttribute("amount");
+		Account a = new Account(
+				System.currentTimeMillis() / 10000,
+				AccountType.CD12,
+				0.0,
+				0.0,
+				u
+			);
+		return "";
+	}
+	
 	@PostMapping("/closeAccount")
-	public String closeAccount(Model model, @ModelAttribute("dm") DashModel dm) {
-		int diff = 0;
+	public String closeAccount(HttpServletRequest request, Model model, @ModelAttribute("dm") DashModel dm) {
+		User u = (User)request.getSession().getAttribute("user");
 		dm.error = "";
 		Long acctToClose = dm.cafo.getAcctToClose();
 		Long balanceTarget = dm.cafo.getBalanceTarget();
-		Optional<Account> oA = aService.findByAccountNumber(acctToClose);
-		Optional<Account> oB = aService.findByAccountNumber(balanceTarget);
-		Account a = null, b = null;
-		diff = acctToClose.compareTo(balanceTarget);
-		if (diff == 0) {
+		if (acctToClose.compareTo(balanceTarget) == 0) {
 			dm.error = "Balance must be deposited into different account!";
 			model.addAttribute("dm", dm);
 			return "/dashboard/dashboard.jsp";
 		}
+		Optional<Account> oA = aService.findByAccountNumber(acctToClose);
+		Optional<Account> oB = aService.findByAccountNumber(balanceTarget);
+		Account a = null, b = null;
 		if (oA.isPresent()) {
 			a = oA.get();
 		} else {
@@ -193,13 +219,11 @@ public class AccountController {
 		b.transact(tDep);
 		
 		a.setAccountType(AccountType.Closed);
-		a.getUser().getAccounts().remove(a);
 		aService.updateAccount(a);
 		aService.updateAccount(b);
-		uService.updateUser(b.getUser());
-		dm.setDefaults(b.getUser());
-		dm.account = b;
-		model.addAttribute("dm", dm);
+		uService.updateUser(u);
+		request.getSession().setAttribute("user", u);
+		request.getSession().setAttribute("acct", b.getId());
 		return "redirect:/dashboard";
 	}
 }
